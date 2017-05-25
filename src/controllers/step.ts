@@ -37,3 +37,15 @@ export function remove(req, res) {
     let id = req.params._id;    
     Step.removeStepByID(id).then(step => res.json(step));
 }
+
+export function checkStepExist(req, res, next) {
+    let id = req.body.step_id;
+    
+    Step.findByStepID(id)
+        .then((step) => {
+            res.status(201);
+            next();
+        })
+        .catch(error => res.send(error));
+    return;
+}
