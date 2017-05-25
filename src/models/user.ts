@@ -1,11 +1,10 @@
 import sequelize from './index';
-// import {sequelize} = require('./index');
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
 
 export default class User {
 
-    private user: any;
+    public user: any;
     private userFields = ['id', 'name', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
     
     constructor() {

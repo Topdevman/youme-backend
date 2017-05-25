@@ -5,13 +5,9 @@ import * as http from 'http';
 import * as path from 'path';
 import sequelize from './models/index';
 import routes from './routes';
-import User from './models/user';
-import Season from './models/season';
+import migrate from './db/migrate';
 
-// const routes = require('./routes');
 const rootRouter = express.Router();
-let userModel = new User();
-let seasonModel = new Season();
 
 const app = express();
 
@@ -24,10 +20,9 @@ app.get('/', (req, res) => {
     res.status(200).send({ message: 'Welcome to the beginning of nothingness.' });
 })
 
-sequelize.sync({force: false}).then(() => {
-  userModel.init();
-  seasonModel.init();
-});
+migrate();
+
+sequelize.sync({force: false});
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

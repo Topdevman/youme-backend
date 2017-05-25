@@ -5,7 +5,7 @@ import seasonModel from './season';
 
 export default class Episode {
 
-    private episode: any;
+    public episode: any;
     private episodeFields = ['id', 'name', 'season_id', 'created_at', 'updated_at'];
     
     constructor(private Season: seasonModel) {
@@ -33,8 +33,8 @@ export default class Episode {
     public save = function (seasonId, name) {
         // return this.saveEpisode(episode).then((episode) => this.prepareForClient(episode));
         return this.episode.findOrCreate({
-            where: {userId: seasonId}, defaults: {
-                userId: seasonId,
+            where: {seasonId: seasonId}, defaults: {
+                seasonId: seasonId,
             }
         }).then((res) => {
             let episode = res[0];
@@ -58,4 +58,8 @@ export default class Episode {
     public removeEpisodeByID = function (id) {
         return this.episode.destroy({attributes: this.episodeFields, where: {id: id}});
     }   
+
+    public init = function () {
+        return this.episode.findOrCreate();
+    }
 }

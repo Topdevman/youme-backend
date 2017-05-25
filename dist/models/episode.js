@@ -11,8 +11,8 @@ class Episode {
         };
         this.save = function (seasonId, name) {
             return this.episode.findOrCreate({
-                where: { userId: seasonId }, defaults: {
-                    userId: seasonId,
+                where: { seasonId: seasonId }, defaults: {
+                    seasonId: seasonId,
                 }
             }).then((res) => {
                 let episode = res[0];
@@ -31,6 +31,9 @@ class Episode {
         };
         this.removeEpisodeByID = function (id) {
             return this.episode.destroy({ attributes: this.episodeFields, where: { id: id } });
+        };
+        this.init = function () {
+            return this.episode.findOrCreate();
         };
         this.episode = index_1.default.define('episodes', {
             id: { primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4 },
