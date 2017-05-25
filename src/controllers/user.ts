@@ -9,8 +9,18 @@ export function register(req, res) {
 }
 
 export function users(req, res) {
+    console.log(req.query);
     let User = new userModel();
-    User.loadAll().then(user => res.json(user)).catch(error => res.send(error));
+    if (req.query.user_id) {
+        User.findByUserID(req.query.user_id).then(user => res.json(user)).catch(error => res.send(error));
+        return;
+    } else if (req.query.user_name) {
+        User.findByUsername(req.query.user_name).then(user => res.json(user)).catch(error => res.send(error));
+        return;
+    } else {
+        User.loadAll().then(user => res.json(user)).catch(error => res.send(error));
+        return;
+    }
 }
 
 export function remove(req, res) {

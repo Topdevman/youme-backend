@@ -6,23 +6,19 @@ const logger = require("morgan");
 const index_1 = require("./models/index");
 const routes_1 = require("./routes");
 const migrate_1 = require("./db/migrate");
+const main_1 = require("./controllers/main");
 const rootRouter = express.Router();
 const app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
     res.status(200).send({ message: 'Welcome to the beginning of nothingness.' });
+    next();
 });
 migrate_1.default();
 index_1.default.sync({ force: false });
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    next();
-});
+app.use((req, res, next) => main_1.default(req, res, next));
 routes_1.default(rootRouter);
 app.use('/', rootRouter);
 const port = process.env.PORT || 3000;

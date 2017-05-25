@@ -1,5 +1,5 @@
-import seasonModel from '../models/season';
 import * as sequelize from '../models/index';
+import seasonModel from '../models/season';
 
 
 export function register(req, res) {
@@ -11,6 +11,18 @@ export function register(req, res) {
 export function seasons(req, res) {
     let Season = new seasonModel();
     Season.loadAll().then(season => res.json(season)).catch(error => res.send(error));
+}
+
+export function checkSeasonExist(req, res, next) {
+    let id = req.body.season_id;
+    let Season = new seasonModel();
+    Season.findBySeasonID(id)
+        .then((season) => {
+            res.json(season);
+            next();
+        })
+        .catch(error => res.send(error));
+    return;
 }
 
 export function remove(req, res) {

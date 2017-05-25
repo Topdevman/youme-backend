@@ -6,6 +6,7 @@ import * as path from 'path';
 import sequelize from './models/index';
 import routes from './routes';
 import migrate from './db/migrate';
+import addHeaders from './controllers/main';
 
 const rootRouter = express.Router();
 
@@ -16,21 +17,16 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
     res.status(200).send({ message: 'Welcome to the beginning of nothingness.' });
+    next();
 })
 
 migrate();
 
 sequelize.sync({force: false});
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    next();
-});
+app.use((req, res, next) => addHeaders(req, res, next));
 
 routes(rootRouter);
 app.use('/', rootRouter);
