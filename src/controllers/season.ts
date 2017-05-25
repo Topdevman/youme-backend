@@ -18,7 +18,7 @@ export function checkSeasonExist(req, res, next) {
     let Season = new seasonModel();
     Season.findBySeasonID(id)
         .then((season) => {
-            res.json(season);
+            res.status(201);
             next();
         })
         .catch(error => res.send(error));

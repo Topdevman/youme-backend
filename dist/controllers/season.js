@@ -17,10 +17,11 @@ function checkSeasonExist(req, res, next) {
     let Season = new season_1.default();
     Season.findBySeasonID(id)
         .then((season) => {
-        res.json(season);
+        res.status(201);
         next();
     })
         .catch(error => res.send(error));
+    return;
 }
 exports.checkSeasonExist = checkSeasonExist;
 function remove(req, res) {

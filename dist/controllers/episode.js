@@ -8,7 +8,9 @@ function register(req, res) {
     const season_id = req.body.season_id;
     const epname = req.body.epname;
     Episode.save(season_id, epname)
-        .then(episode => res.status(201).json(episode));
+        .then(episode => res.status(201).json(episode))
+        .catch(error => res.status(400));
+    return;
 }
 exports.register = register;
 function episodes(req, res) {
