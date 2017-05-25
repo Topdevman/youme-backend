@@ -10,9 +10,9 @@ class Episode {
             return this.moment.findAll({ attributes: this.momentFields });
         };
         this.save = function (episodeId, name) {
-            return this.episode.findOrCreate({
+            return this.moment.findOrCreate({
                 where: { episodeId: episodeId }, defaults: {
-                    episodeId: episodeId,
+                    episodeId: episodeId
                 }
             }).then((res) => {
                 let moment = res[0];

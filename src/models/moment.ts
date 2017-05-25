@@ -32,9 +32,9 @@ export default class Episode {
 
     public save = function (episodeId, name) {
         // return this.saveEpisode(episode).then((episode) => this.prepareForClient(episode));
-        return this.episode.findOrCreate({
+        return this.moment.findOrCreate({
             where: {episodeId: episodeId}, defaults: {
-                episodeId: episodeId,
+                episodeId: episodeId                
             }
         }).then((res) => {
             let moment = res[0];
