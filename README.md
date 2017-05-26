@@ -13,3 +13,6 @@
 * Compile using Grunt - grunt.
 
 * Executing api - node dist/server.js.
+
+All requests are in routes/index.ts file.
+And Every requests must include auth token.

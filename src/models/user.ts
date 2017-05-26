@@ -7,7 +7,7 @@ import * as passwordHash from 'password-hash';
 export default class User {
 
     public user: any;
-    private userFields = ['id', 'username', 'password', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
+    private userFields = ['id', 'provider', 'username', 'password', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
     
     constructor() {
         this.user = sequelize.define('users', {

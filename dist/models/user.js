@@ -7,7 +7,7 @@ const passwordGenerator = require("generate-password");
 const passwordHash = require("password-hash");
 class User {
     constructor() {
-        this.userFields = ['id', 'username', 'password', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
+        this.userFields = ['id', 'provider', 'username', 'password', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
         this.loadAll = function () {
             return this.user.findAll({ attributes: this.userFields });
         };

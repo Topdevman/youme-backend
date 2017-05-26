@@ -11,7 +11,6 @@ export default function baserouter (router) {
 
     router.post('/login', authController.authenticate, authController.serialize,
         authController.generateToken, authController.sendAuthToken); 
-    // router.post('/login',  authController.authenticate, authController.generateToken, authController.sendAuthToken);    
     router.post('/users', userController.register);
     router.post('/seasons', authController.checkAuthToken, authController.checkAuthTokenValid, seasonController.register);
     router.post('/episodes', authController.checkAuthToken, authController.checkAuthTokenValid, seasonController.checkSeasonExist, episodeController.register);
