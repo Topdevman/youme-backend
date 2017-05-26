@@ -1,46 +1,45 @@
-import userModel from '../models/user';
-import seasonModel from '../models/season';
-import * as sequelize from '../models/index';
-import episodeModel from '../models/episode';
-import momentModel from '../models/moment';
-import stepModel from '../models/step';
-import step_progressModel from '../models/step_progress';
+import { Router, Request, Response } from '@types/express';
 
-let User = new userModel();
-let Season = new seasonModel();
-let Episode = new episodeModel(Season);
-let Moment = new momentModel(Episode);
-let Step = new stepModel(Moment);
-let Step_progress = new step_progressModel(Step, User);
+import { Controller } from './controller';
+import { Authenticator } from '../middleware/authenticator';
+import { StepProgress } from '../models/step_progress';
 
-export function register(req, res) {
-   
-    const step_id = req.body.step_id;
-    const user_id = req.body.user_id;
-    const name = req.body.name;
-    Step_progress.save(step_id, user_id, name)
-        .then(step_progress => res.status(201).json(step_progress))
-        .catch(error => res.status(400));
-    return;
-}
+export class StepProgressController extends Controller {
 
-export function step_progresses(req, res) {
-   
-    if (req.query.step_id) {
-        Step_progress.findByStepID(req.query.step_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
-    } else if (req.query.user_id) {
-        Step_progress.findByUserID(req.query.user_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
-    } else if (req.query.step_progress_id) {
-        Step_progress.findByStep_progressID(req.query.step_progress_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
-    } else if (req.query.name) {
-        Step_progress.findByStep_progressName(req.query.name).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
-    } else {
-        Step_progress.loadAll().then(step_progress => res.json(step_progress)).catch(error => res.send(error));
+    constructor(parentRouter : Router) {
+        
+        super('/progress', parentRouter);
     }
-}
 
-export function remove(req, res) {
+    private register(req, res) {
     
-    let id = req.params._id;    
-    Step_progress.removeStep_progressByID(id).then(step_progress => res.json(step_progress));
+        const step_id = req.body.step_id;
+        const user_id = req.body.user_id;
+        const name = req.body.name;
+        StepProgress.save(step_id, user_id, name)
+            .then(step_progress => res.status(201).json(step_progress))
+            .catch(error => res.status(400));
+        return;
+    }
+
+    private StepProgresses(req, res) {
+    
+        if (req.query.step_id) {
+            StepProgress.findByStepID(req.query.step_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
+        } else if (req.query.user_id) {
+            StepProgress.findByUserID(req.query.user_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
+        } else if (req.query.StepProgress_id) {
+            StepProgress.findByStepProgressID(req.query.step_progress_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
+        } else if (req.query.name) {
+            StepProgress.findByStepProgressName(req.query.name).then(StepProgress => res.json(step_progress)).catch(error => res.send(error));
+        } else {
+            StepProgress.loadAll().then(step_progress => res.json(step_progress)).catch(error => res.send(error));
+        }
+    }
+
+    private remove(req, res) {
+        
+        let id = req.params._id;    
+        StepProgress.removeStepProgressByID(id).then(step_progress => res.json(step_progress));
+    }
 }

@@ -1,15 +1,15 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
-import momentModel from './moment';
+import { Moment } from './moment';
 
-export default class Step {
+export class Step {
 
-    public step: any;
-    private stepFields = ['id', 'name', 'moment_id', 'created_at', 'updated_at'];
+    public static step: any;
+    private static stepFields = ['id', 'name', 'moment_id', 'created_at', 'updated_at'];
     
-    constructor(private Moment: momentModel) {
-        this.step = sequelize.define('steps', {            
+    contstructor() {
+        Step.step = sequelize.define('steps', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             name: {type: Sequelize.STRING, unique: true},
             momentId: {
@@ -26,40 +26,40 @@ export default class Step {
         {freezeTableName: true});       
     }
 
-    public loadAll = function () {
+    public static loadAll() {
         return this.step.findAll({attributes: this.stepFields});
     }    
 
-    public save = function (momentId, name) {
-        // return this.savestep(step).then((step) => this.prepareForClient(step));
+    public static save(momentId : string, name : string) {
+        
         return this.step.findOrCreate({
             where: {momentId: momentId}, defaults: {
                 momentId: momentId,
             }
-        }).then((res) => {
+        }).then((res : any) => {
             let step = res[0];
             step.name = name;
             return step.save();
         });
     }
 
-    public findByStepName = function (stepname) {
+    public static findByStepName(stepname : string) {
         return this.step.findOne({attributes: this.stepFields, where: {name: stepname}});
     }
 
-    public findByStepID = function (id) {
+    public static findByStepID(id : string) {
         return this.step.findOne({attributes: this.stepFields, where: {id: id}});
     }
 
-    public findByMomentID = function (momentId) {
+    public static findByMomentID(momentId : string) {
         return this.step.findOne({attributes: this.stepFields, where: {moment_id: momentId}});
     }
 
-    public removeStepByID = function (id) {
+    public static removeStepByID(id : string) {
         return this.step.destroy({attributes: this.stepFields, where: {id: id}});
     }   
 
-    public init = function () {
+    public static init() {
         return this.step.findOrCreate();
     }
 }

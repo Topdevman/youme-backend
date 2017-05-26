@@ -1,16 +1,16 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
-import stepModel from './step';
-import userModel from './user';
+import { Step } from './step';
+import { User } from './user';
 
-export default class step_progress {
+export class StepProgress {
 
-    public step_progress: any;
-    private step_progress_Fields = ['id', 'name', 'step_id', 'created_at', 'updated_at'];
+    public static step_progress: any;
+    private static step_progress_Fields = ['id', 'name', 'step_id', 'created_at', 'updated_at'];
     
-    constructor(private Step: stepModel, private User: userModel) {
-        this.step_progress = sequelize.define('step_progresses', {            
+    constructor() {
+        StepProgress.step_progress = sequelize.define('step_progresses', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             name: {type: Sequelize.STRING, unique: true},
             userId: {
@@ -35,44 +35,44 @@ export default class step_progress {
         {freezeTableName: true});       
     }
 
-    public loadAll = function () {
+    public static loadAll() {
         return this.step_progress.findAll({attributes: this.step_progress_Fields});
     }    
 
-    public save = function (stepId, userId, name) {
+    public static save(stepId : string, userId : string, name : string) {
         return this.step_progress.findOrCreate({
             where: {stepId: stepId, userId: userId}, defaults: {
                 stepId: stepId,
                 userId: userId
             }
-        }).then((res) => {
+        }).then((res : any) => {
             let step_progress = res[0];
             step_progress.name = name;
             return step_progress.save();
         });
     }
 
-    public findByStep_progressName = function (step_progress_name) {
+    public static findByStepProgressName(step_progress_name : string) {
         return this.step_progress.findOne({attributes: this.step_progress_Fields, where: {name: step_progress_name}});
     }
 
-    public findByStep_progressID = function (id) {
+    public static findByStepProgressID(id : string) {
         return this.step_progress.findOne({attributes: this.step_progress_Fields, where: {id: id}});
     }
 
-    public findByStepID = function (stepId) {
+    public static findByStepID(stepId : string) {
         return this.step_progress.findOne({attributes: this.step_progress_Fields, where: {step_id: stepId}});
     }
 
-    public findByUserID = function (userId) {
+    public static findByUserID(userId : string) {
         return this.step_progress.findOne({attributes: this.step_progress_Fields, where: {userId: userId}});
     }
 
-    public removeStep_progressByID = function (id) {
+    public static removeStepProgressByID(id : string) {
         return this.step_progress.destroy({attributes: this.step_progress_Fields, where: {id: id}});
     }   
 
-    public init = function () {
+    public static init() {
         return this.step_progress.findOrCreate();
     }
 }

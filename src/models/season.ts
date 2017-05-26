@@ -2,13 +2,13 @@ import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
 
-export default class Season {
+export class Season {
 
-    public season: any;
-    private seasonFields = ['id', 'name', 'ordering', 'introduction', 'created_at', 'updated_at'];
+    public static season: any;
+    private static seasonFields = ['id', 'name', 'ordering', 'introduction', 'created_at', 'updated_at'];
     
     constructor() {
-        this.season = sequelize.define('seasons', {            
+        Season.season = sequelize.define('seasons', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             name: {type: Sequelize.STRING, unique: true},
             ordering: {type: Sequelize.INTEGER},
@@ -19,20 +19,20 @@ export default class Season {
         {freezeTableName: true});       
     }
 
-    public loadAll = function () {
+    public static loadAll() {
         return this.season.findAll({attributes: this.seasonFields});
     }
 
-    private saveSeason = function (season) {
+    private static saveSeason(season : any) {
         
         season.id = season.id ? season.id : undefined;
 
         return new Promise((resolve, reject) => {
             let query = {attributes: this.seasonFields, where: {name: season.name}};
-            this.season.findOne(query).then((otherseason) => {
+            this.season.findOne(query).then((otherseason  : any) => {
                 if(!otherseason || otherseason.id === season.id){
                     (season.id ? this.season.update(season, {where: {id: season.id}}).then(() => season) : this.season.create(season))
-                    .then((season) => resolve(season)).catch(reject);
+                    .then((season  : any) => resolve(season)).catch(reject);
                 } else {                    
                     reject(new Error('season with this name is already exist'));
                 }
@@ -40,32 +40,32 @@ export default class Season {
         });
     }
 
-    private prepareForClient = function (season) {
+    private static prepareForClient(season  : any) {
         if (season) {
-            let clientData = {};
+            let clientData : any = {};
             _.forEach(this.seasonFields, field => clientData[field] = season[field]);
             season = clientData;
         }
         return season;
     }
 
-    public save = function (season) {
+    public static save(season  : any) {
         return this.saveSeason(season).then((season) => this.prepareForClient(season));
     }
 
-    public findBySeasonName = function (seasonname) {
+    public static findBySeasonName(seasonname : string) {
         return this.season.findOne({attributes: this.seasonFields, where: {name: seasonname}});
     }
 
-    public findBySeasonID = function (id) {
+    public static findBySeasonID(id : string) {
         return this.season.findOne({attributes: this.seasonFields, where: {id: id}});
     }
 
-    public removeSeasonByID = function (id) {
+    public static removeSeasonByID(id : string) {
         return this.season.destroy({attributes: this.seasonFields, where: {id: id}});
     }
 
-    public init() {
+    public static init() {
         this.season.findOrCreate({
             where: {name: 'admin'}, defaults: {
                 name: 'admin',

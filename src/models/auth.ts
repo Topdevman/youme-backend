@@ -1,15 +1,15 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
-import userModel from './user';
+import { User } from './user';
 
-export default class AuthToken {
+export class AuthToken {
 
-    public authToken: any;
-    private authTokenFields = ['id', 'token', 'user_id', 'created_at', 'updated_at'];
+    public static authToken: any;
+    private static authTokenFields = ['id', 'token', 'user_id', 'created_at', 'updated_at'];
     
-    constructor(private User: userModel) {
-        this.authToken = sequelize.define('authTokens', {            
+    constructor() {
+        AuthToken.authToken = sequelize.define('authTokens', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             token: {type: Sequelize.STRING, unique: true},
             userId: {
@@ -26,44 +26,44 @@ export default class AuthToken {
         {freezeTableName: true});       
     }
 
-    public loadAll = function () {
+    public static loadAll() {
         return this.authToken.findAll({attributes: this.authTokenFields});
     }    
 
-    public save = function (userId, token) {
+    public static save(userId : string, token : string) {
 
         return this.authToken.findOrCreate({
             where: {userId: userId}, defaults: {
                 userId: userId,
             }
-        }).then((res) => {
+        }).then((res : any) => {
             let authToken = res[0];
             authToken.token = token;
             return authToken.save();
         });
     }
 
-    public findByAuthTokenName = function (authTokenName) {
+    public static findByAuthTokenName(authTokenName : string) {
         return this.authToken.findOne({attributes: this.authTokenFields, where: {name: authTokenName}});
     }
 
-    public findByAuthTokenID = function (id) {
+    public static findByAuthTokenID(id : string) {
         return this.authToken.findOne({attributes: this.authTokenFields, where: {id: id}});
     }
 
-    public findByUserID = function (userId) {
+    public static findByUserID(userId : string) {
         return this.authToken.findOne({attributes: this.authTokenFields, where: {user_id: userId}});
     }
 
-    public removeAuthTokenByID = function (id) {
+    public static removeAuthTokenByID(id : string) {
         return this.authToken.destroy({attributes: this.authTokenFields, where: {id: id}});
     }   
 
-    public init = function () {
+    public static init() {
         return this.authToken.findOrCreate();
     }
     
-    public clearUserSession = function (userIds) {
+    public static clearUserSession(userIds : any) {
         userIds = typeof userIds === 'string' ?  [userIds] : userIds;
         return this.authToken.destroy({where: {userId: {$in: userIds}}});
     }

@@ -1,15 +1,15 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
-import seasonModel from './season';
+import { Season } from './season';
 
-export default class Episode {
+export class Episode {
 
-    public episode: any;
-    private episodeFields = ['id', 'name', 'season_id', 'created_at', 'updated_at'];
-    
-    constructor(private Season: seasonModel) {
-        this.episode = sequelize.define('episodes', {            
+    public static episode: any;
+    private static episodeFields = ['id', 'name', 'season_id', 'created_at', 'updated_at'];    
+
+    constructor() {
+        Episode.episode = sequelize.define('episodes', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             name: {type: Sequelize.STRING, unique: true},
             seasonId: {
@@ -26,40 +26,40 @@ export default class Episode {
         {freezeTableName: true});       
     }
 
-    public loadAll = function () {
+    public static loadAll() {
         return this.episode.findAll({attributes: this.episodeFields});
     }    
 
-    public save = function (seasonId, name) {
-        // return this.saveEpisode(episode).then((episode) => this.prepareForClient(episode));
+    public static save(seasonId : string, name : string) {
+        
         return this.episode.findOrCreate({
             where: {seasonId: seasonId}, defaults: {
                 seasonId: seasonId,
             }
-        }).then((res) => {
+        }).then((res : any) => {
             let episode = res[0];
             episode.name = name;
             return episode.save();
         });
     }
 
-    public findByEpisodeName = function (episodename) {
+    public static findByEpisodeName(episodename : string) {
         return this.episode.findOne({attributes: this.episodeFields, where: {name: episodename}});
     }
 
-    public findByEpisodeID = function (id) {
+    public static findByEpisodeID(id : string) {
         return this.episode.findOne({attributes: this.episodeFields, where: {id: id}});
     }
 
-    public findBySeasonID = function (seasonId) {
+    public static findBySeasonID(seasonId : string) {
         return this.episode.findOne({attributes: this.episodeFields, where: {season_id: seasonId}});
     }
 
-    public removeEpisodeByID = function (id) {
+    public static removeEpisodeByID(id : string) {
         return this.episode.destroy({attributes: this.episodeFields, where: {id: id}});
     }   
 
-    public init = function () {
+    public static init() {
         return this.episode.findOrCreate();
     }
 }

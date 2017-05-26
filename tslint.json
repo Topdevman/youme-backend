@@ -1,0 +1,26 @@
+{
+	"rules": {
+		"no-unused-expression": true,
+		"no-unused-variable": false,
+		"no-duplicate-variable": true,
+		"no-duplicate-key": true,
+		"no-var-keyword": false,
+		"no-invalid-this": true,
+		"no-eval": true,
+		"no-unnecessary-initializer": true,
+		"no-trailing-whitespace": true,
+		"curly": true,
+		"class-name": true,
+		"semicolon": ["always"],
+		"triple-equals": true,
+		"only-arrow-functions": [false],
+		"prefer-for-of": false,
+		"variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+		"prefer-function-over-method": false,
+		"interface-name": [false, "always-prefix"],
+		"member-access": true,
+		"indent": [true, "tabs"],
+		"eofline": true,
+		"trailing-comma": [true, {"multiline": "never", "singleline": "never"}]
+	}
+}

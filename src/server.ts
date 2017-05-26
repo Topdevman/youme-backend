@@ -4,14 +4,14 @@ import * as logger from 'morgan';
 import * as http from 'http';
 import * as path from 'path';
 import * as passport from 'passport';
-import routes from './routes';
-import migrate from './db/migrate';
-import addHeaders from './controllers/main';
+import * as passwordHash from 'password-hash';
 
-import authController = require('./controllers/auth');
+import { User } from './models/user';
 
 
-const rootRouter = express.Router();
+import { APIController } from './controllers/api';
+import { Migrate } from './db/migrate';
+import { Authenticator } from './middleware/authenticator';
 
 const app = express();
 
@@ -19,21 +19,25 @@ app.use(logger('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-passport.use(authController.localStrategy);
+
 app.use(passport.initialize());
 app.use(passport.session());
+
+let apiController = new APIController(app);
+let migrate = new Migrate();
 
 app.get('/', (req, res, next) => {
     res.status(200).send({ message: 'Welcome to the beginning of nothingness.' });
     next();
 })
 
-migrate();
-
-app.use((req, res, next) => addHeaders(req, res, next));
-
-routes(rootRouter);
-app.use('/', rootRouter);
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', "*");
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 const port = process.env.PORT || 3000;
 app.set('port', port);
@@ -42,5 +46,3 @@ const server = app.listen(port, function () {
     console.log("Server is running on ", port, app.settings.env);
 });
 server.listen(port);
-
-console.info("Server is running on port: " + port);

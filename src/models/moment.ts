@@ -1,15 +1,15 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
-import episodeModel from './episode';
+import { Episode } from './episode';
 
-export default class Episode {
+export class Moment {
 
-    public moment: any;
-    private momentFields = ['id', 'name', 'episode_id', 'created_at', 'updated_at'];
+    public static moment: any;
+    private static momentFields = ['id', 'name', 'episode_id', 'created_at', 'updated_at'];
     
-    constructor(private Episode: episodeModel) {
-        this.moment = sequelize.define('moments', {            
+    constructor() {
+        Moment.moment = sequelize.define('moments', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             name: {type: Sequelize.STRING, unique: true},
             episodeId: {
@@ -26,40 +26,39 @@ export default class Episode {
         {freezeTableName: true});       
     }
 
-    public loadAll = function () {
+    public static loadAll() {
         return this.moment.findAll({attributes: this.momentFields});
     }    
 
-    public save = function (episodeId, name) {
-        // return this.saveEpisode(episode).then((episode) => this.prepareForClient(episode));
+    public static save(episodeId : string, name : string) {
         return this.moment.findOrCreate({
             where: {episodeId: episodeId}, defaults: {
                 episodeId: episodeId                
             }
-        }).then((res) => {
+        }).then((res : any) => {
             let moment = res[0];
             moment.name = name;
             return moment.save();
         });
     }
 
-    public findByMomentName = function (momentname) {
+    public static findByMomentName(momentname : string) {
         return this.moment.findOne({attributes: this.momentFields, where: {name: momentname}});
     }
 
-    public findByMomentID = function (id) {
+    public static findByMomentID(id : string) {
         return this.moment.findOne({attributes: this.momentFields, where: {id: id}});
     }
 
-    public findByEpisodeID = function (episodeId) {
+    public static findByEpisodeID(episodeId : string) {
         return this.moment.findOne({attributes: this.momentFields, where: {episodeId: episodeId}});
     }
 
-    public removeMomentByID = function (id) {
+    public static removeMomentByID(id : string) {
         return this.moment.destroy({attributes: this.momentFields, where: {id: id}});
     }   
 
-    public init = function () {
+    public static init() {
         return this.moment.findOrCreate();
     }
 }
