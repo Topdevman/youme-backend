@@ -10,7 +10,7 @@ class analysis_result {
         this.loadAll = function () {
             return this.analysis_result.findAll({ attributes: this.analysis_result_Fields });
         };
-        this.save = function (stepId, userId, name) {
+        this.save = function (stepId, userId, name, result) {
             return this.analysis_result.findOrCreate({
                 where: { stepId: stepId, userId: userId }, defaults: {
                     stepId: stepId,
@@ -19,10 +19,11 @@ class analysis_result {
             }).then((res) => {
                 let analysis_result = res[0];
                 analysis_result.name = name;
+                analysis_result.result = result;
                 return analysis_result.save();
             });
         };
-        this.findByAnalysis_resultname = function (analysis_result_name) {
+        this.findByAnalysis_resultName = function (analysis_result_name) {
             return this.analysis_result.findOne({ attributes: this.analysis_result_Fields, where: { name: analysis_result_name } });
         };
         this.findByAnalysis_resultID = function (id) {

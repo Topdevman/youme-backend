@@ -22,7 +22,7 @@ class step_progress {
                 return step_progress.save();
             });
         };
-        this.findByStep_progressname = function (step_progress_name) {
+        this.findByStep_progressName = function (step_progress_name) {
             return this.step_progress.findOne({ attributes: this.step_progress_Fields, where: { name: step_progress_name } });
         };
         this.findByStep_progressID = function (id) {

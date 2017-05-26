@@ -23,7 +23,7 @@ function moments(req, res) {
         Moment.findByMomentID(req.query.moment_id).then(moment => res.json(moment)).catch(error => res.send(error));
     }
     else if (req.query.name) {
-        Moment.findByMomentname(req.query.name).then(moment => res.json(moment)).catch(error => res.send(error));
+        Moment.findByMomentName(req.query.name).then(moment => res.json(moment)).catch(error => res.send(error));
     }
     else {
         Moment.loadAll().then(moment => res.json(moment)).catch(error => res.send(error));

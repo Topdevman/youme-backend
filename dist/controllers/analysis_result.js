@@ -16,13 +16,14 @@ function register(req, res) {
     const step_id = req.body.step_id;
     const user_id = req.body.user_id;
     const name = req.body.name;
-    Analysis_result.save(step_id, user_id, name)
+    const result = req.body.result;
+    Analysis_result.save(step_id, user_id, name, result)
         .then(analysis_result => res.status(201).json(analysis_result))
         .catch(error => res.status(400));
     return;
 }
 exports.register = register;
-function analysis_resultes(req, res) {
+function analysis_results(req, res) {
     if (req.query.step_id) {
         Analysis_result.findByStepID(req.query.step_id).then(analysis_result => res.json(analysis_result)).catch(error => res.send(error));
     }
@@ -33,13 +34,13 @@ function analysis_resultes(req, res) {
         Analysis_result.findByUserID(req.query.analysis_result_id).then(analysis_result => res.json(analysis_result)).catch(error => res.send(error));
     }
     else if (req.query.name) {
-        Analysis_result.findByAnalysis_resultname(req.query.name).then(analysis_result => res.json(analysis_result)).catch(error => res.send(error));
+        Analysis_result.findByAnalysis_resultName(req.query.name).then(analysis_result => res.json(analysis_result)).catch(error => res.send(error));
     }
     else {
         Analysis_result.loadAll().then(analysys_result => res.json(analysys_result)).catch(error => res.send(error));
     }
 }
-exports.analysis_resultes = analysis_resultes;
+exports.analysis_results = analysis_results;
 function remove(req, res) {
     let id = req.params._id;
     Analysis_result.removeAnalysis_resultByID(id).then(analysis_result => res.json(analysis_result));

@@ -43,7 +43,7 @@ export default class Step {
         });
     }
 
-    public findByStepname = function (stepname) {
+    public findByStepName = function (stepname) {
         return this.step.findOne({attributes: this.stepFields, where: {name: stepname}});
     }
 

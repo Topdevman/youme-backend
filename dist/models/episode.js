@@ -20,7 +20,7 @@ class Episode {
                 return episode.save();
             });
         };
-        this.findByEpisodename = function (episodename) {
+        this.findByEpisodeName = function (episodename) {
             return this.episode.findOne({ attributes: this.episodeFields, where: { name: episodename } });
         };
         this.findByEpisodeID = function (id) {

@@ -20,7 +20,7 @@ class Episode {
                 return moment.save();
             });
         };
-        this.findByMomentname = function (momentname) {
+        this.findByMomentName = function (momentname) {
             return this.moment.findOne({ attributes: this.momentFields, where: { name: momentname } });
         };
         this.findByMomentID = function (id) {

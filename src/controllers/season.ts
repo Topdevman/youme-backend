@@ -11,7 +11,16 @@ export function register(req, res) {
 
 export function seasons(req, res) {
     
-    Season.loadAll().then(season => res.json(season)).catch(error => res.send(error));
+    if (req.query.season_id) {
+        Season.findBySeasonID(req.query.season_id).then(season => res.json(season)).catch(error => res.send(error));
+        return;
+    } else if (req.query.name) {
+        Season.findBySeasonName(req.query.name).then(season => res.json(season)).catch(error => res.send(error));
+        return;
+    } else {
+        Season.loadAll().then(season => res.json(season)).catch(error => res.send(error));
+        return;
+    }
 }
 
 export function checkSeasonExist(req, res, next) {

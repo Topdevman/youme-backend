@@ -40,7 +40,7 @@ export default class analysis_result {
         return this.analysis_result.findAll({attributes: this.analysis_result_Fields});
     }    
 
-    public save = function (stepId, userId, name) {
+    public save = function (stepId, userId, name, result) {
         return this.analysis_result.findOrCreate({
             where: {stepId: stepId, userId: userId}, defaults: {
                 stepId: stepId,
@@ -49,11 +49,12 @@ export default class analysis_result {
         }).then((res) => {
             let analysis_result = res[0];
             analysis_result.name = name;
+            analysis_result.result = result;
             return analysis_result.save();
         });
     }
 
-    public findByAnalysis_resultname = function (analysis_result_name) {
+    public findByAnalysis_resultName = function (analysis_result_name) {
         return this.analysis_result.findOne({attributes: this.analysis_result_Fields, where: {name: analysis_result_name}});
     }
 

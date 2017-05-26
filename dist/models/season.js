@@ -35,7 +35,7 @@ class Season {
         this.save = function (season) {
             return this.saveSeason(season).then((season) => this.prepareForClient(season));
         };
-        this.findBySeasonname = function (seasonname) {
+        this.findBySeasonName = function (seasonname) {
             return this.season.findOne({ attributes: this.seasonFields, where: { name: seasonname } });
         };
         this.findBySeasonID = function (id) {

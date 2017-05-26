@@ -26,7 +26,7 @@ export function steps(req, res) {
     } else if (req.query.step_id) {
         Step.findByStepID(req.query.step_id).then(step => res.json(step)).catch(error => res.send(error));
     } else if (req.query.name) {
-        Step.findByStepname(req.query.name).then(step => res.json(step)).catch(error => res.send(error));
+        Step.findByStepName(req.query.name).then(step => res.json(step)).catch(error => res.send(error));
     } else {
         Step.loadAll().then(step => res.json(step)).catch(error => res.send(error));
     }

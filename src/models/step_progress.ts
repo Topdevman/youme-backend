@@ -52,7 +52,7 @@ export default class step_progress {
         });
     }
 
-    public findByStep_progressname = function (step_progress_name) {
+    public findByStep_progressName = function (step_progress_name) {
         return this.step_progress.findOne({attributes: this.step_progress_Fields, where: {name: step_progress_name}});
     }
 

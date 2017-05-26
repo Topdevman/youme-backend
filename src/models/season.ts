@@ -53,7 +53,7 @@ export default class Season {
         return this.saveSeason(season).then((season) => this.prepareForClient(season));
     }
 
-    public findBySeasonname = function (seasonname) {
+    public findBySeasonName = function (seasonname) {
         return this.season.findOne({attributes: this.seasonFields, where: {name: seasonname}});
     }
 

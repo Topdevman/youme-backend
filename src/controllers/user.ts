@@ -15,7 +15,7 @@ export function users(req, res) {
         User.findByUserID(req.query.user_id).then(user => res.json(user)).catch(error => res.send(error));
         return;
     } else if (req.query.name) {
-        User.findByUsername(req.query.name).then(user => res.json(user)).catch(error => res.send(error));
+        User.findByUserName(req.query.name).then(user => res.json(user)).catch(error => res.send(error));
         return;
     } else {
         User.loadAll().then(user => res.json(user)).catch(error => res.send(error));
@@ -27,4 +27,16 @@ export function remove(req, res) {
     
     let id = req.params._id;    
     User.removeUserByID(id).then(user => res.json(user));
+}
+
+export function checkUserExist(req, res, next) {
+    let id = req.body.season_id;
+
+    User.findByUserID(id)
+        .then((user) => {
+            res.status(201);
+            next();
+        })
+        .catch(error => res.send(error));
+    return;
 }

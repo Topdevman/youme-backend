@@ -43,7 +43,7 @@ export default class Episode {
         });
     }
 
-    public findByEpisodename = function (episodename) {
+    public findByEpisodeName = function (episodename) {
         return this.episode.findOne({attributes: this.episodeFields, where: {name: episodename}});
     }
 

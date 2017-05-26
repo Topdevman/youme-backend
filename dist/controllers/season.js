@@ -8,7 +8,18 @@ function register(req, res) {
 }
 exports.register = register;
 function seasons(req, res) {
-    Season.loadAll().then(season => res.json(season)).catch(error => res.send(error));
+    if (req.query.season_id) {
+        Season.findBySeasonID(req.query.season_id).then(season => res.json(season)).catch(error => res.send(error));
+        return;
+    }
+    else if (req.query.name) {
+        Season.findBySeasonName(req.query.name).then(season => res.json(season)).catch(error => res.send(error));
+        return;
+    }
+    else {
+        Season.loadAll().then(season => res.json(season)).catch(error => res.send(error));
+        return;
+    }
 }
 exports.seasons = seasons;
 function checkSeasonExist(req, res, next) {

@@ -43,7 +43,7 @@ export default class Episode {
         });
     }
 
-    public findByMomentname = function (momentname) {
+    public findByMomentName = function (momentname) {
         return this.moment.findOne({attributes: this.momentFields, where: {name: momentname}});
     }
 

@@ -20,7 +20,7 @@ class Step {
                 return step.save();
             });
         };
-        this.findByStepname = function (stepname) {
+        this.findByStepName = function (stepname) {
             return this.step.findOne({ attributes: this.stepFields, where: { name: stepname } });
         };
         this.findByStepID = function (id) {

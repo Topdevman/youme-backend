@@ -1,17 +1,20 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
+import * as passwordGenerator from 'generate-password';
+import * as passwordHash from 'password-hash';
 
 export default class User {
 
     public user: any;
-    private userFields = ['id', 'name', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
+    private userFields = ['id', 'username', 'password', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
     
     constructor() {
         this.user = sequelize.define('users', {
             provider: {type: Sequelize.STRING},
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
-            name: {type: Sequelize.STRING, unique: true},
+            username: {type: Sequelize.STRING, unique: true},
+            password: {type: Sequelize.STRING},
             first_name: {type: Sequelize.STRING, field: 'first_name'},
             last_name: {field: 'last_name', type: Sequelize.STRING},
             gender: {type: Sequelize.STRING},
@@ -29,11 +32,23 @@ export default class User {
     }
 
     private saveUser = function (user) {
+
+        user.password = !user.id && !user.password ? passwordGenerator.generate({
+            length: 20,
+            numbers: true
+        }) : user.password;
+
+        if (user.password) {
+            user.password = passwordHash.generate(user.password);
+        } else {
+            delete user["password"];
+        }
         
         user.id = user.id ? user.id : undefined;
+        user.username = user.username ? user.username.trim() : user.username;
 
         return new Promise((resolve, reject) => {
-            let query = {attributes: this.userFields, where: {name: user.name}};
+            let query = {attributes: this.userFields, where: {username: user.username}};
             this.user.findOne(query).then((otherUser) => {
                 if(!otherUser || otherUser.id === user.id){
                     (user.id ? this.user.update(user, {where: {id: user.id}}).then(() => user) : this.user.create(user))
@@ -58,8 +73,8 @@ export default class User {
         return this.saveUser(user).then((user) => this.prepareForClient(user));
     }
 
-    public findByUsername = function (username) {
-        return this.user.findOne({attributes: this.userFields, where: {name: username}});
+    public findByUserName = function (username) {
+        return this.user.findOne({attributes: this.userFields, where: {username: username}});
     }
 
     public findByUserID = function (id) {
@@ -76,13 +91,14 @@ export default class User {
 
     public init() {
         this.user.findOrCreate({
-            where: {name: 'admin'}, defaults: {
+            where: {username: 'admin'}, defaults: {
                 name: 'admin',
                 provider: 'local',
                 first_name: 'Davor',
                 last_name: 'Veljan',
                 gender: 'mail',                
-                avatar: 'none'
+                avatar: 'none',
+                password: passwordHash.generate('qwerty123')
             }
         });
     }

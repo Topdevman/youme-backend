@@ -22,7 +22,7 @@ export function episodes(req, res) {
     } else if (req.query.episode_id) {
         Episode.findByEpisodeID(req.query.epsode_id).then(episode => res.json(episode)).catch(error => res.send(error));
     } else if (req.query.name) {
-        Episode.findByEpisodename(req.query.name).then(episode => res.json(episode)).catch(error => res.send(error));
+        Episode.findByEpisodeName(req.query.name).then(episode => res.json(episode)).catch(error => res.send(error));
     } else {
         Episode.loadAll().then(episode => res.json(episode)).catch(error => res.send(error));
     }

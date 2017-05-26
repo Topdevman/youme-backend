@@ -3,10 +3,13 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as http from 'http';
 import * as path from 'path';
-import sequelize from './models/index';
+import * as passport from 'passport';
 import routes from './routes';
 import migrate from './db/migrate';
 import addHeaders from './controllers/main';
+
+import authController = require('./controllers/auth');
+
 
 const rootRouter = express.Router();
 
@@ -16,6 +19,9 @@ app.use(logger('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+passport.use(authController.localStrategy);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/', (req, res, next) => {
     res.status(200).send({ message: 'Welcome to the beginning of nothingness.' });
@@ -23,8 +29,6 @@ app.get('/', (req, res, next) => {
 })
 
 migrate();
-
-sequelize.sync({force: false});
 
 app.use((req, res, next) => addHeaders(req, res, next));
 

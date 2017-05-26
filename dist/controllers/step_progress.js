@@ -33,7 +33,7 @@ function step_progresses(req, res) {
         Step_progress.findByStep_progressID(req.query.step_progress_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
     }
     else if (req.query.name) {
-        Step_progress.findByStep_progressname(req.query.name).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
+        Step_progress.findByStep_progressName(req.query.name).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
     }
     else {
         Step_progress.loadAll().then(step_progress => res.json(step_progress)).catch(error => res.send(error));
