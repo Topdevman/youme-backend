@@ -1,9 +1,12 @@
-import seasonModel from '../models/season';
 import { Router, Request, Response } from '@types/express';
 
 import { Controller } from './controller';
+import { SeasonController } from './season';
+
 import { Authenticator } from '../middleware/authenticator';
+
 import { Episode } from '../models/episode';
+
 
 export class EpisodeController extends Controller {
 
@@ -12,6 +15,7 @@ export class EpisodeController extends Controller {
         super('/episode', parentRouter);
     }
     
+    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, SeasonController.checkSeasonExist])
     private register(req, res) {
         
         const season_id = req.body.season_id;
@@ -22,6 +26,7 @@ export class EpisodeController extends Controller {
         return;
     }
 
+    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private episodes(req, res) {
     
         if (req.query.season_id) {
@@ -35,21 +40,27 @@ export class EpisodeController extends Controller {
         }
     }
 
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private remove(req, res) {
         
-        let id = req.params._id;    
+        let id = req.params._id;        
         Episode.removeEpisodeByID(id).then(episode => res.json(episode));
+        
     }
 
-    private checkEpisodeExist(req, res, next) {
-        let id = req.body.episode_id;
+    public static checkEpisodeExist(req, res, next) {
         
-        Episode.findByEpisodeID(id)
-            .then((episode) => {
-                res.status(201);
-                next();
-            })
-            .catch(error => res.send(error));
-        return;
+        let id = req.body.episode_id;
+        if (id){
+            Episode.findByEpisodeID(id)
+                .then((episode) => {
+                    res.status(201);
+                    next();
+                })
+                .catch(error => res.send(error));
+            return;
+        } else {
+            res.status(400).send("Episode ID is null");
+        }
     }
 }

@@ -1,7 +1,11 @@
 import { Router, Request, Response } from '@types/express';
 
 import { Controller } from './controller';
+import { UserController } from './user';
+import { StepController } from './step';
+
 import { Authenticator } from '../middleware/authenticator';
+
 import {AnalysisResult} from '../models/analysis_result';
 
 
@@ -12,6 +16,7 @@ export class AnalysisResultController extends Controller {
         super('/analysis', parentRouter);
     }
     
+    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, UserController.checkUserExist, StepController.checkStepExist])
     private register(req, res) {
     
         const step_id = req.body.step_id;
@@ -24,6 +29,7 @@ export class AnalysisResultController extends Controller {
         return;
     }
 
+    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private analysis_results(req, res) {
     
         if (req.query.step_id) {
@@ -39,9 +45,10 @@ export class AnalysisResultController extends Controller {
         }
     }
 
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private remove(req, res) {
         
-        let id = req.params._id;    
+        let id = req.params._id;
         AnalysisResult.removeAnalysisResultByID(id).then(analysis_result => res.json(analysis_result));
     }
 }

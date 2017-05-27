@@ -25,9 +25,8 @@ class Moment {
     }
     static save(episodeId, name) {
         return this.moment.findOrCreate({
-            where: { episodeId: episodeId }, defaults: {
-                episodeId: episodeId
-            }
+            where: { episodeId: episodeId },
+            defaults: { episodeId: episodeId }
         }).then((res) => {
             let moment = res[0];
             moment.name = name;

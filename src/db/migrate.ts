@@ -6,12 +6,14 @@ import { Step } from '../models/step';
 import { StepProgress } from '../models/step_progress';
 import { AnalysisResult } from '../models/analysis_result';
 import { AuthToken } from '../models/auth';
+
 import sequelize from '../models/index';
 
 
 export class Migrate {
 
     constructor() {
+        
         let user = new User();
         let season = new Season();
         let episode = new Episode();

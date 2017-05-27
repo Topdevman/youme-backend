@@ -6,8 +6,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const authenticator_1 = require("../middleware/authenticator");
 const controller_1 = require("./controller");
+const authenticator_1 = require("../middleware/authenticator");
 class AuthController extends controller_1.Controller {
     constructor(parentRouter) {
         super('/login', parentRouter);

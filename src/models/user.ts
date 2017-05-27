@@ -11,6 +11,7 @@ export class User {
     private static userFields = ['id', 'provider', 'username', 'password', 'first_name', 'last_name', 'gender', 'oauth_token', 'oauth_expires_at', 'avatar', 'created_at', 'updated_at'];
         
     constructor() {
+
         User.user = sequelize.define('users', {
             provider: {type: Sequelize.STRING},
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
@@ -29,6 +30,7 @@ export class User {
     }
 
     public static loadAll() {
+
         return this.user.findAll({attributes: this.userFields});
     }
 
@@ -49,6 +51,7 @@ export class User {
         user.username = user.username ? user.username.trim() : user.username;
 
         return new Promise((resolve, reject) => {
+
             let query = {attributes: this.userFields, where: {username: user.username}};
             this.user.findOne(query).then((otherUser : any) => {
                 if(!otherUser || otherUser.id === user.id){
@@ -62,6 +65,7 @@ export class User {
     }
 
     private static prepareForClient(user : any) {
+
         if (user) {
             let clientData : any = {};
             _.forEach(this.userFields, field => clientData[field] = user[field]);
@@ -71,26 +75,32 @@ export class User {
     }
 
     public static save(user : any) {
+
         return this.saveUser(user).then((user) => this.prepareForClient(user));
     }
 
     public static findByUserName(username) {
+
         return this.user.findOne({attributes: this.userFields, where: {username: username}});
     }
 
     public static findByUserID(id : string) {
+
         return this.user.findOne({attributes: this.userFields, where: {id: id}});
     }
 
     public static findExpiredUsers(limit : any) {
+
         return this.user.findAll({attributes: this.userFields, where: {oauth_expires_at: {lt: new Date()}}, order: 'oauth_expires_at', limit: limit});
     }
 
     public static removeUserByID(id : string) {
+
         return this.user.destroy({attributes: this.userFields, where: {id: id}});
     }
 
     public static init() {
+        
         this.user.findOrCreate({
             where: {username: 'admin'}, defaults: {
                 name: 'admin',

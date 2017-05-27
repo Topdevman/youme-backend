@@ -8,6 +8,7 @@ export class Season {
     private static seasonFields = ['id', 'name', 'ordering', 'introduction', 'created_at', 'updated_at'];
     
     constructor() {
+
         Season.season = sequelize.define('seasons', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             name: {type: Sequelize.STRING, unique: true},
@@ -20,6 +21,7 @@ export class Season {
     }
 
     public static loadAll() {
+
         return this.season.findAll({attributes: this.seasonFields});
     }
 
@@ -41,6 +43,7 @@ export class Season {
     }
 
     private static prepareForClient(season  : any) {
+
         if (season) {
             let clientData : any = {};
             _.forEach(this.seasonFields, field => clientData[field] = season[field]);
@@ -50,22 +53,27 @@ export class Season {
     }
 
     public static save(season  : any) {
+
         return this.saveSeason(season).then((season) => this.prepareForClient(season));
     }
 
     public static findBySeasonName(seasonname : string) {
+
         return this.season.findOne({attributes: this.seasonFields, where: {name: seasonname}});
     }
 
     public static findBySeasonID(id : string) {
+
         return this.season.findOne({attributes: this.seasonFields, where: {id: id}});
     }
 
     public static removeSeasonByID(id : string) {
+
         return this.season.destroy({attributes: this.seasonFields, where: {id: id}});
     }
 
     public static init() {
+        
         this.season.findOrCreate({
             where: {name: 'admin'}, defaults: {
                 name: 'admin',

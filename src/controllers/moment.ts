@@ -1,7 +1,10 @@
 import { Router, Request, Response } from '@types/express';
 
 import { Controller } from './controller';
+import { EpisodeController } from './episode';
+
 import { Authenticator } from '../middleware/authenticator';
+
 import { Moment } from '../models/moment';
 
 
@@ -12,6 +15,7 @@ export class MomentController extends Controller {
         super('/moment', parentRouter);
     }
 
+    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, EpisodeController.checkEpisodeExist])
     private register(req, res) {
     
         const epsode_id = req.body.episode_id;
@@ -22,6 +26,7 @@ export class MomentController extends Controller {
         return;
     }
 
+    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private moments(req, res) {
     
         if (req.query.episode_id) {
@@ -35,21 +40,27 @@ export class MomentController extends Controller {
         }
     }
 
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private remove(req, res) {
         
+        console.log(req.params._id)
         let id = req.params._id;    
-        Moment.removeMomentByID(id).then(moment => res.json(moment));
+        Moment.removeMomentByID(id).then(moment => res.json(moment)).catch(error => res.send(error));
     }
 
-    private checkMomentExist(req, res, next) {
+    public static checkMomentExist(req, res, next) {
         let id = req.body.moment_id;
         
-        Moment.findByMomentID(id)
-            .then((moment) => {
-                res.status(201);
-                next();
-            })
-            .catch(error => res.send(error));
-        return;
+        if (id) {
+            Moment.findByMomentID(id)
+                .then((moment) => {
+                    res.status(201);
+                    next();
+                })
+                .catch(error => res.send(error));
+            return;
+        } else {
+            res.status(401).send('Moment ID is null');
+        }
     }
 }

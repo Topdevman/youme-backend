@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 
-import { Authenticator } from '../middleware/authenticator';
 import { Controller } from './controller';
+
+import { Authenticator } from '../middleware/authenticator';
 
 export class AuthController extends Controller {
     

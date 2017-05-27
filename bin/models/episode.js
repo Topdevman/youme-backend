@@ -25,9 +25,8 @@ class Episode {
     }
     static save(seasonId, name) {
         return this.episode.findOrCreate({
-            where: { seasonId: seasonId }, defaults: {
-                seasonId: seasonId,
-            }
+            where: { seasonId: seasonId },
+            defaults: { seasonId: seasonId }
         }).then((res) => {
             let episode = res[0];
             episode.name = name;

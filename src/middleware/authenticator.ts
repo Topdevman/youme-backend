@@ -1,6 +1,6 @@
 import { Express, Request, Response} from "express";
+
 import * as jwt from 'jsonwebtoken';
-import * as passport from 'passport';
 import * as expressJwt from 'express-jwt';
 import * as passwordHash from 'password-hash';
 
@@ -23,6 +23,7 @@ export class Authenticator
 	}	
 
     public static generateToken(req : Request, res : Response, next : Function) {
+        
         req.token = jwt.sign({
             id: req.user.id
         }, 'server secret', {
@@ -32,12 +33,14 @@ export class Authenticator
     }
 
     public static sendAuthToken(req : Request, res : Response) {
+        
         res.json({token: req.token});
     }
 
     public static checkAuthToken = expressJwt({secret: 'server secret'});
 
     public static extractAuthToken(req : Request) {
+        
         let authHeader = req.get('Authorization');
         if (authHeader) {
             authHeader = authHeader.startsWith(this.AUTH_HEADER_PREFIX) ? authHeader.substr(this.AUTH_HEADER_PREFIX.length - 1)
@@ -48,10 +51,12 @@ export class Authenticator
     }
 
     public static sendInvalidAuthTokenError(res : Response) {
+        
         res.status(401).send('Invalid access token');
     }
 
     public static checkAuthTokenValid(req : Request, res : Response, next : Function) {
+        
         if (req.user) {
             let authtoken = Authenticator.extractAuthToken(req);
             if (authtoken) {
@@ -66,6 +71,7 @@ export class Authenticator
     }
 
     public static serialize(req, res, next) {
+        
         req.user = {
             id: req.user.id
         };
@@ -75,7 +81,7 @@ export class Authenticator
     public static logout(req : Request, res : Response, next : Function) {
         
         AuthToken.clearUserSession(req.user.id).then(() => {
-            req.logout();
+            req.connection.destroy();
             res.send();
         }).catch(next);
     }

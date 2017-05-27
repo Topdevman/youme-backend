@@ -3,12 +3,9 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as http from 'http';
 import * as path from 'path';
-import * as passport from 'passport';
 import * as passwordHash from 'password-hash';
 
 import { User } from './models/user';
-
-
 import { APIController } from './controllers/api';
 import { Migrate } from './db/migrate';
 import { Authenticator } from './middleware/authenticator';
@@ -19,9 +16,6 @@ app.use(logger('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 let apiController = new APIController(app);
 let migrate = new Migrate();

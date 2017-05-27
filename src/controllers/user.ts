@@ -1,7 +1,9 @@
 import { Router, Request, Response } from '@types/express';
 
 import { Controller } from './controller';
+
 import { Authenticator } from '../middleware/authenticator';
+
 import { User } from '../models/user';
 
 export class UserController extends Controller {
@@ -15,7 +17,8 @@ export class UserController extends Controller {
     private register(req : Request, res : Response) {
 
         User.save(req.body)
-            .then(user => res.status(201).json(user));
+            .then(user => res.status(201).json(user))
+            .catch(error => res.status(401).send(error));
     }
 
     @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
@@ -33,7 +36,7 @@ export class UserController extends Controller {
         }
     }
 
-    @Controller.delete('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private remove(req : Request, res : Response) {
         
         let id = req.params._id;    
@@ -42,14 +45,18 @@ export class UserController extends Controller {
 
     public static checkUserExist(req : Request, res : Response, next : Function) {
         
-        let id = req.body.season_id;
-        User.findByUserID(id)
-            .then((user : any) => {
-                res.status(201);
-                next();
-            })
-            .catch((error : any) => res.send(error));
-        return;
+        let id = req.body.user_id;
+        if (id) {
+            User.findByUserID(id)
+                .then((user : any) => {
+                    res.status(201);
+                    next();
+                })
+                .catch((error : any) => res.send(error));
+            return;
+        } else {
+            res.status(401).send('User ID is null');
+        }
     }
 
 }

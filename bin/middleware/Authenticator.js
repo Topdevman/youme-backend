@@ -59,7 +59,7 @@ class Authenticator {
     }
     static logout(req, res, next) {
         auth_1.AuthToken.clearUserSession(req.user.id).then(() => {
-            req.logout();
+            req.connection.destroy();
             res.send();
         }).catch(next);
     }

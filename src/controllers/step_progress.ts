@@ -1,8 +1,13 @@
 import { Router, Request, Response } from '@types/express';
 
 import { Controller } from './controller';
+import { UserController } from './user';
+import { StepController } from './step';
+
 import { Authenticator } from '../middleware/authenticator';
+
 import { StepProgress } from '../models/step_progress';
+
 
 export class StepProgressController extends Controller {
 
@@ -11,6 +16,7 @@ export class StepProgressController extends Controller {
         super('/progress', parentRouter);
     }
 
+    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, UserController.checkUserExist, StepController.checkStepExist])
     private register(req, res) {
     
         const step_id = req.body.step_id;
@@ -22,6 +28,7 @@ export class StepProgressController extends Controller {
         return;
     }
 
+    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private StepProgresses(req, res) {
     
         if (req.query.step_id) {
@@ -31,12 +38,13 @@ export class StepProgressController extends Controller {
         } else if (req.query.StepProgress_id) {
             StepProgress.findByStepProgressID(req.query.step_progress_id).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
         } else if (req.query.name) {
-            StepProgress.findByStepProgressName(req.query.name).then(StepProgress => res.json(step_progress)).catch(error => res.send(error));
+            StepProgress.findByStepProgressName(req.query.name).then(step_progress => res.json(step_progress)).catch(error => res.send(error));
         } else {
             StepProgress.loadAll().then(step_progress => res.json(step_progress)).catch(error => res.send(error));
         }
     }
 
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
     private remove(req, res) {
         
         let id = req.params._id;    

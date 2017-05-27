@@ -14,6 +14,7 @@ export class APIController extends Controller
 	constructor(app : Application)
 	{
 		super("/", app);
+		
 		let userController = new UserController(this.router);
 		let authController = new AuthController(this.router);
 		let seasonController = new SeasonController(this.router);

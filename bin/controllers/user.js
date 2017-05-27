@@ -15,7 +15,8 @@ class UserController extends controller_1.Controller {
     }
     register(req, res) {
         user_1.User.save(req.body)
-            .then(user => res.status(201).json(user));
+            .then(user => res.status(201).json(user))
+            .catch(error => res.status(401).send(error));
     }
     users(req, res) {
         if (req.query.user_id) {
@@ -36,14 +37,19 @@ class UserController extends controller_1.Controller {
         user_1.User.removeUserByID(id).then((user) => res.json(user));
     }
     static checkUserExist(req, res, next) {
-        let id = req.body.season_id;
-        user_1.User.findByUserID(id)
-            .then((user) => {
-            res.status(201);
-            next();
-        })
-            .catch((error) => res.send(error));
-        return;
+        let id = req.body.user_id;
+        if (id) {
+            user_1.User.findByUserID(id)
+                .then((user) => {
+                res.status(201);
+                next();
+            })
+                .catch((error) => res.send(error));
+            return;
+        }
+        else {
+            res.status(401).send('User ID is null');
+        }
     }
 }
 __decorate([
@@ -53,6 +59,6 @@ __decorate([
     controller_1.Controller.get('/', [authenticator_1.Authenticator.checkAuthToken, authenticator_1.Authenticator.checkAuthTokenValid])
 ], UserController.prototype, "users", null);
 __decorate([
-    controller_1.Controller.delete('/', [authenticator_1.Authenticator.checkAuthToken, authenticator_1.Authenticator.checkAuthTokenValid])
+    controller_1.Controller.delete('/:_id', [authenticator_1.Authenticator.checkAuthToken, authenticator_1.Authenticator.checkAuthTokenValid])
 ], UserController.prototype, "remove", null);
 exports.UserController = UserController;

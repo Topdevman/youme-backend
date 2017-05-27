@@ -4,7 +4,7 @@ const index_1 = require("./index");
 const Sequelize = require("sequelize");
 const moment_1 = require("./moment");
 class Step {
-    contstructor() {
+    constructor() {
         Step.step = index_1.default.define('steps', {
             id: { primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4 },
             name: { type: Sequelize.STRING, unique: true },
@@ -25,9 +25,8 @@ class Step {
     }
     static save(momentId, name) {
         return this.step.findOrCreate({
-            where: { momentId: momentId }, defaults: {
-                momentId: momentId,
-            }
+            where: { momentId: momentId },
+            defaults: { momentId: momentId }
         }).then((res) => {
             let step = res[0];
             step.name = name;

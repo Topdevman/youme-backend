@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+
 import { Authenticator } from "../middleware/Authenticator";
 
 const CONTROLLERS = new Map<Object, IControllerMeta>();

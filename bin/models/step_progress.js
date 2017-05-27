@@ -34,7 +34,8 @@ class StepProgress {
     }
     static save(stepId, userId, name) {
         return this.step_progress.findOrCreate({
-            where: { stepId: stepId, userId: userId }, defaults: {
+            where: { stepId: stepId, userId: userId },
+            defaults: {
                 stepId: stepId,
                 userId: userId
             }

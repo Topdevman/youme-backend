@@ -1,7 +1,9 @@
 import sequelize from './index';
 import * as Sequelize from 'sequelize';
 import * as _ from 'lodash';
+
 import { User } from './user';
+
 
 export class AuthToken {
 
@@ -9,6 +11,7 @@ export class AuthToken {
     private static authTokenFields = ['id', 'token', 'user_id', 'created_at', 'updated_at'];
     
     constructor() {
+        
         AuthToken.authToken = sequelize.define('authTokens', {            
             id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
             token: {type: Sequelize.STRING, unique: true},
@@ -27,6 +30,7 @@ export class AuthToken {
     }
 
     public static loadAll() {
+        
         return this.authToken.findAll({attributes: this.authTokenFields});
     }    
 
@@ -44,26 +48,32 @@ export class AuthToken {
     }
 
     public static findByAuthTokenName(authTokenName : string) {
+        
         return this.authToken.findOne({attributes: this.authTokenFields, where: {name: authTokenName}});
     }
 
     public static findByAuthTokenID(id : string) {
+        
         return this.authToken.findOne({attributes: this.authTokenFields, where: {id: id}});
     }
 
     public static findByUserID(userId : string) {
+       
         return this.authToken.findOne({attributes: this.authTokenFields, where: {user_id: userId}});
     }
 
     public static removeAuthTokenByID(id : string) {
+        
         return this.authToken.destroy({attributes: this.authTokenFields, where: {id: id}});
     }   
 
     public static init() {
+        
         return this.authToken.findOrCreate();
     }
     
     public static clearUserSession(userIds : any) {
+        
         userIds = typeof userIds === 'string' ?  [userIds] : userIds;
         return this.authToken.destroy({where: {userId: {$in: userIds}}});
     }
