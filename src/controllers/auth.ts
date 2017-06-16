@@ -10,7 +10,7 @@ export class AuthController extends Controller {
         super('/login', parentRouter);
     }
 
-    @Controller.post('/', [Authenticator.authenticate, Authenticator.serialize, Authenticator.generateToken, Authenticator.sendAuthToken])
+    @Controller.post('/', [Authenticator.generateToken, Authenticator.sendAuthToken])
     private Login(req : Request, res : Response, next : Function) {
         res.status(200).send(res.json());
     }

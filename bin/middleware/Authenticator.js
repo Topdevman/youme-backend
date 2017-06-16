@@ -2,25 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
-const passwordHash = require("password-hash");
-const user_1 = require("../models/user");
-const auth_1 = require("../models/auth");
+const index_1 = require("../models/index");
 class Authenticator {
-    static authenticate(req, res, next) {
-        let username = req.body.username;
-        let password = req.body.password;
-        user_1.User.findByUserName(username).then((user) => {
-            req.user = user && passwordHash.verify(password, user.password) ? user : null;
-            next();
-        });
-    }
     static generateToken(req, res, next) {
         req.token = jwt.sign({
-            id: req.user.id
+            id: req.body.userID
         }, 'server secret', {
             expiresIn: '7d'
         });
-        auth_1.AuthToken.save(req.user.id, req.token).then(() => next()).catch(next);
+        index_1.default.AuthToken.create({ token: req.token, userId: req.body.userID }).then(() => {
+            req.userID = req.body.userID;
+            next();
+        }).catch(() => next());
     }
     static sendAuthToken(req, res) {
         res.json({ token: req.token });
@@ -38,10 +31,10 @@ class Authenticator {
         res.status(401).send('Invalid access token');
     }
     static checkAuthTokenValid(req, res, next) {
-        if (req.user) {
+        if (req.userID) {
             let authtoken = Authenticator.extractAuthToken(req);
             if (authtoken) {
-                auth_1.AuthToken.findByUserID(req.user.id).then((validToken) => !validToken || authtoken !== validToken.token ? this.sendInvalidAuthTokenError(res) : next()).catch(next);
+                index_1.default.AuthToken.findOne({ where: { userId: req.userID } }).then((validToken) => !validToken || authtoken !== validToken.token ? this.sendInvalidAuthTokenError(res) : next()).catch(() => next());
             }
             else {
                 Authenticator.sendInvalidAuthTokenError(res);
@@ -51,19 +44,14 @@ class Authenticator {
             next();
         }
     }
-    static serialize(req, res, next) {
-        req.user = {
-            id: req.user.id
-        };
-        next();
-    }
     static logout(req, res, next) {
-        auth_1.AuthToken.clearUserSession(req.user.id).then(() => {
+        index_1.default.AuthToken.destroy({ where: { userId: req.userID } }).then(() => {
             req.connection.destroy();
             res.send();
-        }).catch(next);
+        }).catch(() => next());
     }
 }
 Authenticator.AUTH_HEADER_PREFIX = 'Bearer ';
 Authenticator.checkAuthToken = expressJwt({ secret: 'server secret' });
 exports.Authenticator = Authenticator;
+//# sourceMappingURL=authenticator.js.map

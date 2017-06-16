@@ -1,18 +1,14 @@
-#Youme Apis
+# youme-node-backend
 
-- There are executing steps in the following.
+1. install PostgreSQL, set the password
+2. Create database named "youme"
+3. npm install -g nodemon
+4. npm install -g sequelize-cli
+5. npm install.
+6. sequelize db:migrate
+7. npm run watch:build
+8. And open other bach, and then nodemon bin/server.js
 
-* PostgreSQL Download and Install
+Please Check that the database after migrate database.
 
-* Install grunt using npm - npm i -g grunt-cli.
-
-* Install Dependencies and devDependencies - npm i.
-
-* Create youme database in PostgreSQL.
-
-* Compile using Grunt - grunt.
-
-* Executing api - node dist/server.js.
-
-All requests are in routes/index.ts file.
-And Every requests must include auth token.
+Every request requires auth token.

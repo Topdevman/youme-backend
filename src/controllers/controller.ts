@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 
-import { Authenticator } from "../middleware/Authenticator";
+// import { Authenticator } from "../middleware/Authenticator";
 
 const CONTROLLERS = new Map<Object, IControllerMeta>();
 
@@ -10,7 +10,7 @@ export abstract class Controller
 
 	constructor(protected rootRoute : string, router : Router)
 	{
-		router.use(rootRoute, this.router);
+		router.use(rootRoute, this.router);		
 
 		let cont = CONTROLLERS.get(this.constructor);
 		if (cont)

@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "npm-run-all --parallel watch:*",
     "watch:build": "tsc --watch",
-    "watch:nodemon": "nodemon --delay 1 --watch bin/* bin/server.js"
+    "watch:nodemon": "cross-env NODE_ENV=development nodemon --delay 1 --watch bin/* bin/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "@types/morgan": "^1.7.32",
     "@types/password-hash": "^1.2.19",
     "@types/sequelize": "^4.0.55",
+    "cors": "^2.8.3",
     "typescript": "^2.3.3"
   },
   "dependencies": {

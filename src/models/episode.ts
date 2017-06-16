@@ -1,73 +1,49 @@
-import sequelize from './index';
 import * as Sequelize from 'sequelize';
-import * as _ from 'lodash';
 
-import { Season } from './season';
+export interface EpisodeAttributes {
+    id?: string;    
+    name?: string;
+    seasonId?: string;
+}
 
+export interface EpisodeInstance extends Sequelize.Instance<EpisodeAttributes> {
+    id: string;
+    createAt: Date;
+    updateAt: Date;
 
-export class Episode {
+    name: string;
+    seasonId: string;
+}
 
-    public static episode: any;
-    private static episodeFields = ['id', 'name', 'season_id', 'created_at', 'updated_at'];    
-
-    constructor() {
-        
-        Episode.episode = sequelize.define('episodes', {            
-            id: {primaryKey: true, type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4},
-            name: {type: Sequelize.STRING, unique: true},
-            seasonId: {
-                model: Season.season,
-                type: Sequelize.STRING,
-                field: "season_id",
-                key: 'id',
-                unique: true,
-                deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
-            },         
-            createdAt: {type: Sequelize.DATE, field: 'created_at'},
-            updatedAt: {type: Sequelize.DATE, field: 'updated_at'}
+export default function defineEpisode(sequelize: Sequelize.Sequelize, DataTypes) {
+    let Episode = sequelize.define('Episode', {
+        id: {
+            type: DataTypes.STRING,
+            primaryKey: true,
+            defaultValue: DataTypes.UUIDV4
         },
-        {freezeTableName: true});       
-    }
+        name: {
+            type: DataTypes.STRING,
+            unique: true
+        }        
+    }, {
+        classMethods: {
+            associate: function(models) {
+                Episode.belongsTo(models.Season, {
+                    foreignKey: 'seasonId',
+                    onDelete: 'CASCADE'
+                });
+                Episode.hasMany(models.Moment, {
+                    foreignKey: 'episodeId',
+                    as: 'moments'
+                });
+                Episode.hasMany(models.Track, {
+                    foreignKey: 'episodeId',
+                    as: 'tracks'
+                });
+            }
+        }
+    });
 
-    public static loadAll() {
-        
-        return this.episode.findAll({attributes: this.episodeFields});
-    }    
-
-    public static save(seasonId : string, name : string) {
-        
-        return this.episode.findOrCreate({
-            where: {seasonId: seasonId},
-            defaults: {seasonId: seasonId}
-            }).then((res : any) => {
-                let episode = res[0];
-                episode.name = name;
-                return episode.save();
-            });
-    }
-
-    public static findByEpisodeName(episodename : string) {
-        
-        return this.episode.findOne({attributes: this.episodeFields, where: {name: episodename}});
-    }
-
-    public static findByEpisodeID(id : string) {
-        
-        return this.episode.findOne({attributes: this.episodeFields, where: {id: id}});
-    }
-
-    public static findBySeasonID(seasonId : string) {
-        
-        return this.episode.findOne({attributes: this.episodeFields, where: {season_id: seasonId}});
-    }
-
-    public static removeEpisodeByID(id : string) {
-        
-        return this.episode.destroy({attributes: this.episodeFields, where: {id: id}});
-    }   
-
-    public static init() {
-       
-        return this.episode.findOrCreate();
-    }
+    return Episode;
 }

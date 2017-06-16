@@ -4,6 +4,11 @@
       "moduleResolution": "node",
       "target": "ES6",
       "skipLibCheck": true,
+      "declaration": false,
+      "noImplicitAny": false,
+      "emitDecoratorMetadata": true,
+      "sourceMap": true,
+      "noLib": false,
       "experimentalDecorators": true,
       "outDir": "bin/"
     },

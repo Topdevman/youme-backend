@@ -5,7 +5,7 @@ import { EpisodeController } from './episode';
 
 import { Authenticator } from '../middleware/authenticator';
 
-import { Moment } from '../models/moment';
+import db from '../models/index';
 
 
 export class MomentController extends Controller {
@@ -14,53 +14,82 @@ export class MomentController extends Controller {
         
         super('/moment', parentRouter);
     }
-
-    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, EpisodeController.checkEpisodeExist])
-    private register(req, res) {
     
-        const epsode_id = req.body.episode_id;
-        const name = req.body.name;
-        Moment.save(epsode_id, name)
-            .then(moment => res.status(201).json(moment))
-            .catch(error => res.status(400));
+    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, EpisodeController.checkEpisodeExist])    
+    private register(req : Request, res : Response) {
+        db.Moment.create(req.body).then(moment => res.status(201).send(moment))
+                    .catch(error => res.status(404).send(error));
         return;
     }
 
-    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])    
     private moments(req, res) {
     
-        if (req.query.episode_id) {
-            Moment.findByEpisodeID(req.query.episode_id).then(moment => res.json(moment)).catch(error => res.send(error));
-        } else if (req.query.moment_id) {
-            Moment.findByMomentID(req.query.moment_id).then(moment => res.json(moment)).catch(error => res.send(error));
+        if (req.query.episodeId) {
+            db.Moment.findOne({where: {episodeId: req.query.episodeId}}).then(moment => res.json(moment)).catch(error => res.send(error));
         } else if (req.query.name) {
-            Moment.findByMomentName(req.query.name).then(moment => res.json(moment)).catch(error => res.send(error));
+            db.Moment.findOne({where: {name: req.query.name}}).then(moment => res.json(moment)).catch(error => res.send(error));
         } else {
-            Moment.loadAll().then(moment => res.json(moment)).catch(error => res.send(error));
+            db.Moment.findAll({
+                include: [{
+                    model: db.View,
+                    as: 'views',                
+                }]
+            }).then(moment => res.json(moment)).catch(error => res.send(error));
         }
     }
 
-    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    @Controller.get('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    private getMomentById(req, res) {       
+        const id = req.params._id;
+        db.Moment.findById(id, {
+            include: [{
+                model: db.View,
+                as: 'views',                
+            }]
+        }).then(moment => res.status(201).send(moment)).catch(() => res.status(404).send("Moment not found"));        
+    }
+
+    @Controller.put('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    private update(req, res) {
+        const id = req.params._id;
+        const query = req.body;        
+        db.Moment.update(query, {where: {id: id}}).then(moment => res.status(201).send(moment)).catch(() => res.status(404).send("Moment not found"));
+              
+    }
+
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])    
     private remove(req, res) {
         
-        console.log(req.params._id)
         let id = req.params._id;    
-        Moment.removeMomentByID(id).then(moment => res.json(moment)).catch(error => res.send(error));
+        db.Moment.destroy({where: {id: id}}).then(moment => res.json(moment));
+
+        return;   
     }
 
     public static checkMomentExist(req, res, next) {
-        let id = req.body.moment_id;
         
-        if (id) {
-            Moment.findByMomentID(id)
+        let id = req.body.momentId;
+        if (id){
+            db.Moment.findById(id)
                 .then((moment) => {
+                    req.totalView = moment.totalView + 1;
+                    req.episodeId = moment.episodeId;
                     res.status(201);
                     next();
                 })
                 .catch(error => res.send(error));
-            return;
         } else {
-            res.status(401).send('Moment ID is null');
+            res.status(400).send("Moment is not exist");
         }
+
+        return;
+    }
+}
+
+declare module "express" {
+    interface Request {
+        totalView?: number;
+        episodeId?: string;
     }
 }

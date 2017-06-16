@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+// import { Authenticator } from "../middleware/Authenticator";
 const CONTROLLERS = new Map();
 class Controller {
     constructor(rootRoute, router) {
@@ -47,3 +48,4 @@ class Controller {
     }
 }
 exports.Controller = Controller;
+//# sourceMappingURL=Controller.js.map

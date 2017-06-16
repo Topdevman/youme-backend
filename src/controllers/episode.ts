@@ -5,7 +5,7 @@ import { SeasonController } from './season';
 
 import { Authenticator } from '../middleware/authenticator';
 
-import { Episode } from '../models/episode';
+import db from '../models/index';
 
 
 export class EpisodeController extends Controller {
@@ -15,44 +15,99 @@ export class EpisodeController extends Controller {
         super('/episode', parentRouter);
     }
     
-    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, SeasonController.checkSeasonExist])
-    private register(req, res) {
-        
-        const season_id = req.body.season_id;
-        const name = req.body.name;
-        Episode.save(season_id, name)
-            .then(episode => res.status(201).json(episode))
-            .catch(error => res.status(400));
+    @Controller.post('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid, SeasonController.checkSeasonExist])    
+    private register(req : Request, res : Response) {
+        db.Episode.create(req.body).then((episode) => {
+            db.Season.update({totalEpisode: req.totalEpisode}, {where: {id: req.body.seasonId}}).then((episode) => res.status(201).send(episode)).catch((error) => res.status(400));
+        }).catch(() => res.status(400).send("Bad request"));
         return;
     }
 
-    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    @Controller.get('/', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])    
     private episodes(req, res) {
     
-        if (req.query.season_id) {
-            Episode.findBySeasonID(req.query.season_id).then(episode => res.json(episode)).catch(error => res.send(error));
-        } else if (req.query.episode_id) {
-            Episode.findByEpisodeID(req.query.epsode_id).then(episode => res.json(episode)).catch(error => res.send(error));
+        if (req.query.seasonId) {
+            db.Episode.findOne({where: {seasonId: req.query.seasonId}}).then(episode => res.json(episode)).catch(error => res.send(error));
         } else if (req.query.name) {
-            Episode.findByEpisodeName(req.query.name).then(episode => res.json(episode)).catch(error => res.send(error));
+            db.Episode.findOne({where: {name: req.query.name}}).then(episode => res.json(episode)).catch(error => res.send(error));
         } else {
-            Episode.loadAll().then(episode => res.json(episode)).catch(error => res.send(error));
+            db.Episode.findAll({
+                include: [{
+                    model: db.Moment,
+                    as: 'moments',
+                    include: [{
+                        model: db.View,
+                        as: 'views'
+                    }]                
+                }, {
+                    model: db.Track,
+                    as: 'tracks',
+                    include: [{
+                        model: db.TrackView,
+                        as: 'views'
+                    }]
+                }]
+            }).then(episode => res.json(episode)).catch(error => res.send(error));
         }
+        return;
     }
 
-    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    @Controller.get('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    private getEpisodeByID(req, res, next) {
+        console.log(req.params._id);
+        const id = req.params._id;
+        db.Episode.findById(id, {
+            include: [{
+                model: db.Moment,
+                as: 'moments',
+                include: [{
+                    model: db.View,
+                    as: 'views'
+                }]                
+            }, {
+                model: db.Track,
+                as: 'tracks',
+                include: [{
+                    model: db.TrackView,
+                    as: 'views'
+                }]
+            }]
+        }).then(episode => res.status(201).send(episode)).catch(() => res.status(404).send("Episode not found"));
+    }
+
+    @Controller.put('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])
+    private update(req, res) {
+        const id = req.params._id;
+        const query = req.body;
+        db.Episode.update(query, {where: {id: id}}).then(episode => res.status(201).send(episode)).catch(() => res.status(404).send("Episode not found"));
+    }
+
+    @Controller.delete('/:_id', [Authenticator.checkAuthToken, Authenticator.checkAuthTokenValid])    
     private remove(req, res) {
         
-        let id = req.params._id;        
-        Episode.removeEpisodeByID(id).then(episode => res.json(episode));
-        
+        let id = req.params._id;
+            db.Episode.destroy({where: {id: id}}).then((episode) => {
+                db.Season.findById(id).then(season => {
+                    let totalEpisode = season.totalEpisode - 1;
+                    db.Season.update({
+                        totalEpisode: totalEpisode
+                    }, {
+                        where: {id: id}
+                    }).then(() => res.status(201).send(episode))
+                    .catch(() => res.status(400).send("Bad Request"));
+                })
+                .catch(() => res.status(404).send("Bad Request"));
+            })
+            .catch(() => res.status(404).send("Bad Request"));
+
+            return;   
     }
 
     public static checkEpisodeExist(req, res, next) {
         
-        let id = req.body.episode_id;
+        let id = req.body.episodeId;
         if (id){
-            Episode.findByEpisodeID(id)
+            db.Episode.findById(id)
                 .then((episode) => {
                     res.status(201);
                     next();
@@ -60,7 +115,7 @@ export class EpisodeController extends Controller {
                 .catch(error => res.send(error));
             return;
         } else {
-            res.status(400).send("Episode ID is null");
+            res.status(400).send("Episode ID is not exist");
         }
     }
 }
