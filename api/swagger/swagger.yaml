@@ -1,0 +1,1193 @@
+swagger: '2.0'
+info:
+  description: 
+   This is the YouMe application server
+  version: 1.0.0
+  title: YouMe
+host: localhost:3000
+basePath: /
+tags:
+  - name: login
+    description: Get auth token
+  - name: season
+    description: Operations about season
+  - name: episode
+    description: Operations about episode
+  - name: moment
+    description: Operations about moment
+  - name: view
+    description: Operation about moment view
+  - name: track
+    description: Operation about track
+  - name: trackview
+    description: Operation about views of track
+schemes:
+  - http
+paths:
+  /login:
+    post:
+      tags:
+        - login
+      summary: Get an auth token
+      description: ''
+      operationId: login
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:        
+        - in: body
+          name: user
+          description: User object to generate auth token
+          required: true
+          schema:
+            $ref: '#/definitions/user'
+      responses:
+        '405':
+          description: Invalid input
+  /season:
+    post:
+      tags:
+        - season
+      summary: Create new season
+      description: ''
+      operationId: createSeason
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:       
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - in: body
+          name: season
+          description: Create a new season
+          required: true
+          schema:
+            $ref: '#/definitions/Season'
+      responses:
+        '401':
+          description: No authorization
+    get:
+      tags:
+        - season
+      summary: Get all seasons
+      description: ''
+      operationId: getSeasons
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string       
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '401':
+          description: No authorization      
+  '/season/{seasonId}':
+    get:
+      tags:
+        - season
+      summary: Find season by ID
+      description: Returns a single season
+      operationId: getSeasonById
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: seasonId
+          in: path
+          description: ID of season to return
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Season not found
+      # security:
+      #   - Bearer: []
+    put:
+      tags:
+        - season
+      summary: Update an existing season
+      description: ''
+      operationId: updateSeason
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: seasonId
+          in: path
+          description: SeasonID
+          required: true
+          type: string
+        - in: body
+          name: season
+          description: Season object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/SeasonUpdate'
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Season not found
+        '405':
+          description: Validation exception
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    delete:
+      tags:
+        - season
+      summary: Deletes a season
+      description: ''
+      operationId: deleteSeason
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: seasonId
+          in: path
+          description: Pet id to delete
+          required: true
+          type: string
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Season not found
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []  
+  /episode:
+    get:
+      tags:
+        - episode
+      summary: Returns episodes
+      description: ''
+      operationId: getEpisodes
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    post:
+      tags:
+        - episode
+      summary: Create new episode
+      description: ''
+      operationId: createEpisode
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - in: body
+          name: Episode
+          description: Create new episode
+          required: true
+          schema:
+            $ref: '#/definitions/Episode'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: seasonId not found
+      # security:
+      #   - Bearer: []
+  '/episode/{episodeId}':
+    get:
+      tags:
+        - episode
+      summary: Get new episode
+      description: ''
+      operationId: getEpisodeByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: episodeId
+          in: path
+          description: return a episode by ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: seasonId not found
+      # security:
+      #   - Bearer: []
+    put:
+      tags:
+        - episode
+      summary: Update an existing episode
+      description: ''
+      operationId: updateEpisode
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: episodeId
+          in: path
+          description: EpisodeID
+          required: true
+          type: string
+        - in: body
+          name: epiosde
+          description: Episode object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/EpisodeUpdate'
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Episode not found
+        '405':
+          description: Validation exception
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    delete:
+      tags:
+        - episode
+      summary: delete an episode
+      description: ''
+      operationId: deleteEpisodeByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: episodeId
+          in: path
+          description: Delete an episode by Id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: seasonId not found
+      # security:
+      #   - Bearer: []
+  /moment:
+    get:
+      tags:
+        - moment
+      summary: Returns moments
+      description: ''
+      operationId: getMoments
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+         description: No authorization
+      # security:
+      #   - Bearer: []
+    post:
+      tags:
+        - moment
+      summary: Create new moment
+      description: ''
+      operationId: createMoment
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - in: body
+          name: Moment
+          description: Create new moment
+          required: true
+          schema:
+            $ref: '#/definitions/Moment'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: episodeId not found
+      # security:
+      #   - Bearer: []   
+  '/moment/{momentId}':
+    get:
+      tags:
+        - moment
+      summary: Get new moment
+      description: ''
+      operationId: getMomentByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: momentId
+          in: path
+          description: return a moment by ID
+          required: true
+          type: string          
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: momentId not found
+      # security:
+      #   - Bearer: []
+    put:
+      tags:
+        - moment
+      summary: Update an existing moment
+      description: ''
+      operationId: momentEpisode
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: momentId
+          in: path
+          description: MomentID
+          required: true
+          type: string
+        - in: body
+          name: moement
+          description: Moment object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/MomentUpdate'
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Moment not found
+        '405':
+          description: Validation exception
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    delete:
+      tags:
+        - moment
+      summary: delete an moment
+      description: ''
+      operationId: deleteMomentByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: momentId
+          in: path
+          description: return a moment by ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: momentId not found
+      # security:
+      #   - Bearer: []
+  /view:
+    get:
+      tags:
+        - view
+      summary: Returns views of a moment
+      description: ''
+      operationId: getViews
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+         description: No authorization
+      # security:
+      #   - Bearer: []
+    post:
+      tags:
+        - view
+      summary: Create new view in a moment
+      description: ''
+      operationId: createView
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - in: body
+          name: view
+          description: Create new view in a moment
+          required: true
+          schema:
+            $ref: '#/definitions/View'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: momentId not found
+      # security:
+      #   - Bearer: []   
+  '/view/{viewId}':
+    get:
+      tags:
+        - view
+      summary: Get new view
+      description: ''
+      operationId: getViewByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: viewId
+          in: path
+          description: return a view in a moment by ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: viewId not found
+      # security:
+      #   - Bearer: []
+    put:
+      tags:
+        - view
+      summary: Update an existing view in a moment
+      description: ''
+      operationId: updateView
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: viewId
+          in: path
+          description: ViewID
+          required: true
+          type: string
+        - in: body
+          name: view
+          description: Update Values
+          required: true
+          schema:
+            $ref: '#/definitions/ViewUpdate'
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: View not found
+        '405':
+          description: Validation exception
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    delete:
+      tags:
+        - view
+      summary: delete an view in a moment
+      description: ''
+      operationId: deleteViewByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: viewId
+          in: path
+          description: Delete an view by Id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: viewId not found
+      # security:
+      #   - Bearer: []
+  /track:  
+    get:
+      tags:
+        - track
+      summary: Returns tracks
+      description: ''
+      operationId: getTracks
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+         description: No authorization
+      # security:
+      #   - Bearer: []
+    post:
+      tags:
+        - track
+      summary: Create new track
+      description: ''
+      operationId: createTrack
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - in: body
+          name: Track
+          description: Create new track
+          required: true
+          schema:
+            $ref: '#/definitions/Track'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: episodeId not found
+      # security:
+      #   - Bearer: []    
+  '/track/{trackId}':
+    get:
+      tags:
+        - track
+      summary: Get new track
+      description: ''
+      operationId: getTrackByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: trackId
+          in: path
+          description: Get an track by Id
+          required: true          
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: trackId not found
+      # security:
+      #   - Bearer: []
+    put:
+      tags:
+        - track
+      summary: Update an existing track
+      description: ''
+      operationId: updateTrack
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: trackId
+          in: path
+          description: TrackID
+          required: true
+          type: string
+        - in: body
+          name: track
+          description: Update Values
+          required: true
+          schema:
+            $ref: '#/definitions/TrackUpdate'
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Track not found
+        '405':
+          description: Validation exception
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    delete:
+      tags:
+        - track
+      summary: delete an track
+      description: ''
+      operationId: deleteTrackByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: trackId
+          in: path
+          description: Delete an track by Id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: trackId not found
+      # security:
+      #   - Bearer: []
+  /trackview:
+    get:
+      tags:
+        - trackview
+      summary: Returns views in a track
+      description: ''
+      operationId: getTrackViews
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '401':
+         description: No authorization
+      # security:
+      #   - Bearer: []
+    post:
+      tags:
+        - trackview
+      summary: Create new view in a track
+      description: ''
+      operationId: createTrackView
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - in: body
+          name: TrackView
+          description: Create new view in a track
+          required: true
+          schema:
+            $ref: '#/definitions/TrackView'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: trackId not found
+      # security:
+      #   - Bearer: []    
+  '/trackview/{trackviewId}':
+    get:
+      tags:
+        - trackview
+      summary: Get new view in a track
+      description: ''
+      operationId: getTrackViewByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: trackviewId
+          in: path
+          description: Get an view in a track by Id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: tarckviewId not found
+      # security:
+      #   - Bearer: []
+    put:
+      tags:
+        - trackview
+      summary: Update an existing view in a track
+      description: ''
+      operationId: updateTrackView
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: trackviewId
+          in: path
+          description: TrackVIewID
+          required: true
+          type: string
+        - in: body
+          name: trackview
+          description: Update Values
+          required: true
+          schema:
+            $ref: '#/definitions/TrackViewUpdate'
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: View not found
+        '405':
+          description: Validation exception
+        '401':
+          description: No authorization
+      # security:
+      #   - Bearer: []
+    delete:
+      tags:
+        - trackview
+      summary: delete a view in a track
+      description: ''
+      operationId: deleteTrackViewByID
+      parameters:
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          type: string
+        - name: trackviewId
+          in: path
+          description: Delete an view in a track by Id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: No authorization
+        '404':
+          description: trackviewId not found
+      # security:
+      #   - Bearer: []
+# securityDefinitions:
+#   Bearer:
+#     type: apiKey
+#     name: Authorization
+#     in: header   
+definitions:
+  user:
+    type: object
+    required:
+      - userID
+      - secret
+    properties:
+      id:
+        type: string
+      userID:
+        type: string
+      secret:
+        type: string
+    xml:
+      name: Season
+  Season:
+    type: object
+    required:
+      - name
+      - ordering
+      - introduction
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      ordering:
+        type: string
+      introduction:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Season
+  Episode:
+    type: object
+    required:
+      - name
+      - seasonId  
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      seasonId:
+        type: string      
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Episode
+  EpisodeUpdate:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      seasonId:
+        type: string      
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Episode
+  Moment:
+    type: object
+    required:
+      - name
+      - part
+      - episodeId
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      part:
+        type: string
+      totalView:
+        type: integer
+      episodeId:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Moment
+  MomentUpdate:
+    type: object    
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      part:
+        type: string
+      totalView:
+        type: integer
+      episodeId:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Moment
+  View:
+    type: object
+    required:
+      - title
+      - ordering
+      - type
+      - content
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      ordering:
+        type: string
+      type:
+        type: string
+      content:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: View
+  ViewUpdate:
+    type: object    
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      ordering:
+        type: string
+      type:
+        type: string
+      content:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: View
+  Track:
+    type: object
+    required:
+      - name
+      - part
+      - episodeId
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      part:
+        type: string
+      episodeId:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Track
+  TrackUpdate:
+    type: object    
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      part:
+        type: string
+      episodeId:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: Track
+  TrackView:
+    type: object
+    required:
+      - title      
+      - type
+      - content
+      - trackId
+    properties:
+      id:
+        type: string
+      title:
+        type: string      
+      type:
+        type: string
+      content:
+        type: string
+      trackId:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: TrackView
+  TrackViewUpdate:
+    type: object    
+    properties:
+      id:
+        type: string
+      title:
+        type: string      
+      type:
+        type: string
+      content:
+        type: string
+      createAt:
+        type: string
+        format: date-time
+      updateAt:
+        type: string
+        format: date-time
+    xml:
+      name: TrackView
+  SeasonUpdate:
+    type: object
+    properties:
+      title:
+        type: string      
+      type:
+        type: string
+      content:
+        type: string
+    xml:
+      name: TrackView
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
